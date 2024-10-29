@@ -1,38 +1,39 @@
 // components/MessageBubble.tsx
 
+import { Message as MessageType } from "@/app/_types/Chat";
+import { format } from "date-fns";
 import React from "react";
 
-type Props = {
-  text: string;
-  sender: "incoming" | "outgoing";
-  highlight?: string;
-};
+type Props = {} & MessageType;
 
-export default function Message({ text, sender, highlight = "" }: Props) {
+export default function Message(props: Props) {
+  const highlight = "通話";
   const highlightedText = highlight
-    ? text.replace(
+    ? props.text.replace(
         new RegExp(`(${highlight})`, "gi"),
         '<span class="bg-yellow-200">$1</span>'
       )
-    : text;
+    : props.text;
 
   return (
     <div
       className={`flex ${
-        sender === "outgoing" ? "justify-end" : "justify-start"
+        props.sender === "outgoing" ? "justify-end" : "justify-start"
       }`}
     >
       <div
-        className={`relative max-w-xs p-3 rounded-lg shadow ${
-          sender === "incoming" ? "bg-white" : "bg-green-100"
+        className={`relative gap-1 ${
+          props.sender === "incoming" ? "flex" : "flex flex-row-reverse"
         }`}
       >
-        <span
+        <div
           dangerouslySetInnerHTML={{ __html: highlightedText }}
-          className="text-gray-800"
-        ></span>
-        <span className="text-xs text-gray-500 absolute bottom-0 right-0">
-          {/* Here the date or time would go if desired */}
+          className={`text-gray-800 whitespace-pre-wrap w-full shadow px-3 py-2 rounded-[16px] text-[12px] ${
+            props.sender === "incoming" ? "bg-white" : "bg-green-100"
+          }`}
+        ></div>
+        <span className="text-xs text-gray-500  bottom-[-16px] right-0 whitespace-nowrap flex-grow self-end">
+          {format(props.date, "HH:mm")}
         </span>
       </div>
     </div>

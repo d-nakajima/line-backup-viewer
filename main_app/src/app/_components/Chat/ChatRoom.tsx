@@ -2,31 +2,46 @@
 "use client";
 
 import React, { useState } from "react";
+import { format } from "date-fns";
+import { ja } from "date-fns/locale"; // 変更
+
 import Message from "./Message";
 import DateTag from "./DateTag";
+import { getMessages } from "@/app/lib/storage";
 
 type Props = {
   messages: {
-    id: number;
     text: string;
     date: string;
     sender: "incoming" | "outgoing";
   }[];
 };
 
-export default function ChatRoom({ messages }: Props) {
+export default function ChatRoom(props: Props) {
+  console.log(props);
   const [searchTerm, setSearchTerm] = useState("");
+
+  const isSameDate = (date1: Date, date2: Date | undefined) => {
+    if (!date2) return false;
+    return format(date1, "yyyy/MM/dd") === format(date2, "yyyy/MM/dd");
+  };
+  const isSameYear = (date1: Date, date2: Date | undefined) => {
+    if (!date2) return false;
+    return format(date1, "yyyy") === format(date2, "yyyy");
+  };
 
   const handleSearchChange = (event: React.ChangeEvent<HTMLInputElement>) => {
     setSearchTerm(event.target.value);
   };
 
-  const filteredMessages = messages.filter((message) =>
-    message.text.toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredMessages = getMessages("大志")
+    .filter((message) =>
+      message.text?.toLowerCase().includes(searchTerm.toLowerCase())
+    )
+    .slice(0, 100);
 
   return (
-    <div className="w-80 flex flex-col h-screen bg-gray-100 ">
+    <div className="w-screen overflow-x-hidden flex flex-col h-screen bg-[#92aad5] ">
       {/* Header */}
       <div className="h-16 flex items-center justify-between p-4 bg-white shadow sticky top-0 left-0 right-0">
         {/* BackButton */}
@@ -43,14 +58,20 @@ export default function ChatRoom({ messages }: Props) {
 
       {/* Messages */}
       <div className="flex-1 overflow-y-auto p-4 space-y-4">
-        {filteredMessages.map((message) => (
-          <div key={message.id}>
-            <DateTag date={message.date} />
-            <Message
-              text={message.text}
-              sender={message.sender}
-              highlight={searchTerm}
-            />
+        {filteredMessages.map((message, i) => (
+          <div key={i}>
+            {!isSameDate(message.date, filteredMessages[i - 1]?.date) && (
+              <DateTag
+                date={
+                  isSameYear(message.date, filteredMessages[i - 1]?.date)
+                    ? format(message.date, "MM/dd(E)", { locale: ja })
+                    : format(message.date, "yyyy/MM/dd(E)", {
+                        locale: ja,
+                      })
+                }
+              />
+            )}
+            <Message {...message} />
           </div>
         ))}
       </div>
