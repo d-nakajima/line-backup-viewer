@@ -28,12 +28,26 @@ export function getMessages(senderName: string): Message[] {
       return;
     }
 
+    // 11:30		XXがメッセージの送信を取り消しました
+    if (/^(\d{2}:\d{2})\s{2}(.+?)$/.test(line)) {
+      const [, time, text] = line.match(/^(\d{2}:\d{2})\s{2}(.+?)$/) ?? [];
+      messages.push({
+        id: `${index}`,
+        text,
+        name: senderName,
+        date: new Date(currentDate + " " + time),
+        sender: "system",
+      });
+      return;
+    }
+
     if (/^(\d{2}:\d{2})\s(.+?)\s\"(.+)$/.test(line)) {
       isMultipleLine = true;
       const [, time, name, text] =
         line.match(/^(\d{2}:\d{2})\s(.+?)\s\"(.+)$/) ?? [];
 
       messages.push({
+        id: `${index}`,
         text: text,
         name,
         date: new Date(currentDate + " " + time),
@@ -46,6 +60,7 @@ export function getMessages(senderName: string): Message[] {
       const [, time, name, text] =
         line.match(/^(\d{2}:\d{2})\s(.+?)\s(.+)$/) ?? [];
       messages.push({
+        id: `${index}`,
         text: text,
         name,
         date: new Date(currentDate + " " + time),

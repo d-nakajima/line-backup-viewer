@@ -1,4 +1,5 @@
-// components/MessageBubble.tsx
+"use client";
+import { useHighlightText } from "@/app/_providers/Chat/HighlightTextProvider";
 
 import { Message as MessageType } from "@/app/_types/Chat";
 import { format } from "date-fns";
@@ -7,13 +8,7 @@ import React from "react";
 type Props = {} & MessageType;
 
 export default function Message(props: Props) {
-  const highlight = "通話";
-  const highlightedText = highlight
-    ? props.text.replace(
-        new RegExp(`(${highlight})`, "gi"),
-        '<span class="bg-yellow-200">$1</span>'
-      )
-    : props.text;
+  const { replaceHighlight } = useHighlightText();
 
   return (
     <div
@@ -27,7 +22,7 @@ export default function Message(props: Props) {
         }`}
       >
         <div
-          dangerouslySetInnerHTML={{ __html: highlightedText }}
+          dangerouslySetInnerHTML={{ __html: replaceHighlight(props.text) }}
           className={`text-gray-800 whitespace-pre-wrap w-full shadow px-3 py-2 rounded-[16px] text-[12px] ${
             props.sender === "incoming" ? "bg-white" : "bg-green-100"
           }`}
