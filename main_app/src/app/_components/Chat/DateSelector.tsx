@@ -25,8 +25,8 @@ export default function DateSelector(props: Props) {
     messages.map((msg) => format(msg.date, "yyyy-MM-dd"))
   );
 
-  const startDay = startOfMonth(messages[0].date);
-  const endDay = startOfMonth(messages[messages.length - 1].date);
+  const startDay = startOfMonth(messages[messages.length - 1].date);
+  const endDay = startOfMonth(messages[0].date);
 
   const months = eachMonthOfInterval({ start: startDay, end: endDay });
 

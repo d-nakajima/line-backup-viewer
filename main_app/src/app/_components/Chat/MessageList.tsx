@@ -1,7 +1,7 @@
 // components/ChatRoom.tsx
 "use client";
 
-import React, { memo, useEffect } from "react";
+import React, { memo } from "react";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale"; // 変更
 
